@@ -42,22 +42,23 @@ def getWindow(dirname):
       # find the corresponding segmentation
       video_segmentation_folder = dirname + '/Labels'
       os.chdir(dirname + '/Labels')
+      print(os.getcwd())
 
       # loop through all the segmentations in this directory
-      for filename in os.listdir(dirname):
+      for filename in os.listdir(video_segmentation_folder):
 
         # ignoring hidden files
         if not filename.startswith('.'):
-            segmentation = os.path.join(dirname, filename)
+            segmentation = os.path.join(video_segmentation_folder, filename)
 
             # checking if it is a file
             if os.path.isfile(segmentation):
                 
                 # find the frame number 
-                frame_num = segmentation[-3:]
+                frame_num = os.path.splitext(filename)[0][-6:]
 
                 # find the corresponding video in the workflow folder 
-                wf_path = '/Volumes/WD Drive/MSc Project/CATARACTS_WF_2020/Videos/train' + vid_num
+                wf_path = '/Volumes/WD_Drive/MSc_Project/CATARACTS_WF_2020/Videos/train' + vid_num + '.mp4'
 
                 os.chdir(wf_path)
                 print(os.getcwd())
