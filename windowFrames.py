@@ -32,40 +32,34 @@ import cv2
 ''' Function to get a window of 50 frames before and after the frame of '''
 def getWindow(dirname):
 
-    # find the video number to be processed 
-    if os.path.exists(dirname):
+  # find the video number to be processed 
+  if os.path.exists(dirname):
 
-      # get the video number
-      vid_num = dirname[-2:]
-      print(vid_num)
+    # get the video number
+    vid_num = dirname[-2:]
+    print(vid_num)
 
-      # find the corresponding segmentation
-      video_segmentation_folder = dirname + '/Labels'
-      os.chdir(dirname + '/Labels')
-      print(os.getcwd())
+    # find the corresponding segmentation
+    video_segmentation_folder = dirname + '/Labels'
+    os.chdir(dirname + '/Labels')
+    print(os.getcwd())
 
-      # loop through all the segmentations in this directory
-      for filename in os.listdir(video_segmentation_folder):
+    # loop through all the segmentations in this directory
+    for filename in os.listdir(video_segmentation_folder):
 
-        # ignoring hidden files
-        if not filename.startswith('.'):
-            segmentation = os.path.join(video_segmentation_folder, filename)
+      # ignoring hidden files
+      if not filename.startswith('.'):
+          segmentation = os.path.join(video_segmentation_folder, filename)
 
-            # checking if it is a file
-            if os.path.isfile(segmentation):
-                
-                # find the frame number 
-                frame_num = os.path.splitext(filename)[0][-6:]
+          # checking if it is a file
+          if os.path.isfile(segmentation):
+              
+              # find the frame number 
+              frame_num = os.path.splitext(filename)[0][-6:]
 
-                # find the corresponding video in the workflow folder 
-                wf_path = '/Volumes/WD_Drive/MSc_Project/CATARACTS_WF_2020/Videos/train' + vid_num + '.mp4'
-
-                os.chdir(wf_path)
-                print(os.getcwd())
-
-
-
-
-    # find the frame number of the segmentation in the video 
-    return 
+              # find the corresponding video in the workflow folder 
+              wf_file = '/Volumes/WD_Drive/MSc_Project/CATARACTS_WF_2020/Videos/train' + vid_num + '.mp4'
+              
+              getWindow(wf_file, frame_num)
+  return 
 
