@@ -3,44 +3,69 @@ import argparse
 import os 
 import cv2
 
-def extractImages(pathIn, pathOut):
-    count = 0
-    vidcap = cv2.VideoCapture(pathIn)
-    success,image = vidcap.read()
-    success = True
-    while success:
-        vidcap.set(cv2.CAP_PROP_POS_MSEC,(count*1000))    # added this line 
-        success,image = vidcap.read()
-        print ('Read a new frame: ', success)
-        cv2.imwrite( pathOut + "\\frame%d.jpg" % count, image)     # save frame as JPEG file
-        count = count + 1
+# def extractImages(pathIn, pathOut):
+#     count = 0
+#     vidcap = cv2.VideoCapture(pathIn)
+#     success,image = vidcap.read()
+#     success = True
+#     while success:
+#         vidcap.set(cv2.CAP_PROP_POS_MSEC,(count*1000))    # added this line 
+#         success,image = vidcap.read()
+#         print ('Read a new frame: ', success)
+#         cv2.imwrite( pathOut + "\\frame%d.jpg" % count, image)     # save frame as JPEG file
+#         count = count + 1
 
-if __name__=="__main__":
-    a = argparse.ArgumentParser()
-    a.add_argument("train01.mp4", help="path to video")
-    a.add_argument("TESTtrain01.mp4", help="path to images")
-    args = a.parse_args()
-    print(args)
-    extractImages(args.pathIn, args.pathOut)
+# if __name__=="__main__":
+#     a = argparse.ArgumentParser()
+#     a.add_argument("train01.mp4", help="path to video")
+#     a.add_argument("TESTtrain01.mp4", help="path to images")
+#     args = a.parse_args()
+#     print(args)
+#     extractImages(args.pathIn, args.pathOut)
 
 
 
-def getWindow(wf_file, save_path, frame_num):
+def getWindow(wf_file, save_path, frame_num, windowSize):
 
   count = 0 
 
   # open the workflow video file
   vidcap = cv2.VideoCapture(wf_file)
 
+  # get frame rate 
+  frame_rate = vidcap.get(cv2.CAP_PROP_FPS)
+
+  # find the time stamp (in ms) in the video footage to be extracted
+  time_stamp = 1000 * frame_num / frame_rate
+
+  # find the time stamp (in ms) of n frames before the frame with segmentation
+  # will do this when I change window to be in terms of frames
+
+  print(time_stamp)
+
+
+
+
+
   # access the image array 
-  success, image = vidcap.read()
+  success, image = vidcap.read()    
+    
+
   # success = True
 
   # if video successfully read
   while success:
-    # fps is 30 fps
-    print(vidcap.get(cv2.CAP_PROP_FPS))
+    print('yes')
+    
+    # # get frame rate 
+    # frame_rate = vidcap.get(cv2.CAP_PROP_FPS)
 
+    # # find the time stamp in the video footage to be extracted in ms
+    # time_stamp = 1000 * frame_num / frame_rate
+    # # time_stamp = vidcap.get(cv2.CAP_PROP_POS_MSEC)
+
+    # # find the frame number in the video at this time stamp
+    # frame 
 
       # vidcap.set(cv2.CAP_PROP_POS_MSEC,(count*1000))    # added this line 
       # success,image = vidcap.read()
@@ -54,7 +79,7 @@ def getWindow(wf_file, save_path, frame_num):
 
 
 ''' Function to get a window of 50 frames before and after the frame of '''
-def generateFlows(dirname):
+def generateFlows(dirname, windowSize):
 
   # find the video number to be processed 
   if os.path.exists(dirname):
@@ -86,6 +111,6 @@ def generateFlows(dirname):
               save_path = '/Volumes/WD_Drive/MSc_Project/Windows/Video' + vid_num + '/'
 
               # generate video for the window of frames centered on segmentation
-              getWindow(wf_file, save_path, frame_num)
+              getWindow(wf_file, save_path, frame_num, windowSize)
   return 
 
