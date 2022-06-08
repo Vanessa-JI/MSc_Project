@@ -32,12 +32,20 @@ import numpy as np
 def genVideo(video_arr, save_path, frame_rate, frame_num): 
 
   if not os.path.exists(save_path):
-    os.mkdir(save_path)
+    os.makedirs(save_path)
+  
+  img_size = video_arr.shape[2], video_arr.shape[1]
 
-  out = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'XVID'), frame_rate, (video_arr.shape[1], video_arr.shape[0]), isColor=True)
+  out = cv2.VideoWriter(save_path + '/' + frame_num + '.mp4', cv2.VideoWriter_fourcc(*'XVID'), frame_rate, img_size, isColor=True)
 
-  for i in range(len(video_arr)):
-      out.write(video_arr[i])
+  # video_arr = list(video_arr)
+
+  tester = video_arr[0].shape
+
+
+  for i in range(video_arr.shape[0]):
+    # plt.imshow(video_arr[i], vmin=np.amin(video_arr[i]), vmax=np.amax(video_arr[i]), cmap='brg')
+    out.write(video_arr[i, :, :, :])
   out.release()
 
   return 
