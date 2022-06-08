@@ -2,6 +2,9 @@ import sys
 import argparse
 import os 
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 # def extractImages(pathIn, pathOut):
 #     count = 0
@@ -25,6 +28,31 @@ import cv2
 
 
 
+''' Function to generate a video from the frames extracted in the window centered on the segmentation image'''
+def genVideo(video_arr, save_path, frame_rate, frame_num): 
+
+  if not os.path.exists(save_path):
+    os.mkdir(save_path)
+
+  out = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'XVID'), frame_rate, (video_arr.shape[1], video_arr.shape[0]), isColor=True)
+
+  for i in range(len(video_arr)):
+      out.write(video_arr[i])
+  out.release()
+
+  return 
+
+
+
+
+
+
+
+
+
+
+
+''' Function to get the frames extracted from the window centered on the segmentation'''
 def getWindow(wf_file, save_path, frame_num, windowSize):
 
   count = 0 
@@ -36,45 +64,54 @@ def getWindow(wf_file, save_path, frame_num, windowSize):
   frame_rate = vidcap.get(cv2.CAP_PROP_FPS)
 
   # find the time stamp (in ms) in the video footage to be extracted
-  time_stamp = 1000 * frame_num / frame_rate
+  time_stamp = 1000 * int(frame_num) / frame_rate
 
   # find the time stamp (in ms) of n frames before the frame with segmentation
   # will do this when I change window to be in terms of frames
 
-  print(time_stamp)
+  # define the window to extract frames from
+  windowStart, windowEnd = time_stamp - windowSize, time_stamp + windowSize
 
+  time = windowStart
+  video_arr = []
 
+  while time < windowEnd:
 
+    # go to the frame at the point of interest 
+    vidcap.set(cv2.CAP_PROP_POS_MSEC, time)
 
+    # read the image array for the frame at this point
+    success, image = vidcap.read()
 
-  # access the image array 
-  success, image = vidcap.read()    
-    
+    if success:
+      
+      # add this image to the array 
+      video_arr.append(image)
+      # np.append(video_arr, image)
 
-  # success = True
+      # this will capture a window of 20 frames for a window size of 250 ms
+      time += 25
 
-  # if video successfully read
-  while success:
-    print('yes')
-    
-    # # get frame rate 
-    # frame_rate = vidcap.get(cv2.CAP_PROP_FPS)
+  video_arr = np.array(video_arr)
+  shapetest = video_arr.shape
 
-    # # find the time stamp in the video footage to be extracted in ms
-    # time_stamp = 1000 * frame_num / frame_rate
-    # # time_stamp = vidcap.get(cv2.CAP_PROP_POS_MSEC)
+  # make the array of frames in the window into a video 
+  genVideo(video_arr, save_path, frame_rate, frame_num)
 
-    # # find the frame number in the video at this time stamp
-    # frame 
-
-      # vidcap.set(cv2.CAP_PROP_POS_MSEC,(count*1000))    # added this line 
-      # success,image = vidcap.read()
-      # print ('Read a new frame: ', success)
-      # cv2.imwrite(save_path + "\\frame%d.jpg" % count, image)     # save frame as JPEG file
-      # count = count + 1
-  
+  # my_test = len(video_arr)
+  # plt.imshow(video_arr[10], vmin=np.amin(video_arr[1]), vmax=np.amax(video_arr[10]), cmap='brg')
 
   return 
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -108,7 +145,7 @@ def generateFlows(dirname, windowSize):
               wf_file = '/Volumes/WD_Drive/MSc_Project/CATARACTS_WF_2020/Videos/train' + vid_num + '.mp4'
               
               # define save path for window centered on segmentation 
-              save_path = '/Volumes/WD_Drive/MSc_Project/Windows/Video' + vid_num + '/'
+              save_path = '/Volumes/WD_Drive/MSc_Project/Windows/Video' + vid_num 
 
               # generate video for the window of frames centered on segmentation
               getWindow(wf_file, save_path, frame_num, windowSize)
