@@ -2,6 +2,7 @@
 
 import os
 import glob
+import cv2
 
 def mkdir_ifnotexists(dir):
     if os.path.exists(dir):
@@ -14,15 +15,19 @@ videos = ['Video01', 'Video02', 'Video03', 'Video04', 'Video05',
         'Video16', 'Video17', 'Video18', 'Video19', 'Video20',
         'Video21', 'Video22', 'Video23', 'Video24']
 
-for filename in glob.glob('Video02/Images/*.png'):
-    img = cv2.imread(filename)
+for video in videos:
 
-    vid_file='/Volumes/WD_Drive/MSc_Project/Windows/Video01/000090.mp4'
-    frame_pth='/Volumes/WD_Drive/MSc_Project/Windows_To_Frames/Video01/000090'
-    mkdir_ifnotexists(frame_pth)
-    cmd = "ffmpeg -i %s -start_number 0 -vsync 0 %s/frame_%%06d.png" % (
-                vid_file,
-                frame_pth,
-            )
-    os.system(cmd)
+    rootdir = '/Volumes/WD_Drive/MSc_Project/Windows/' + video
 
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            vid_file = os.path.join(subdir, file)
+
+            frame_pth='/Volumes/WD_Drive/MSc_Project/Windows_To_Frames/' + video + '/' + file[:6]
+
+            mkdir_ifnotexists(frame_pth)
+            cmd = "ffmpeg -i %s -start_number 0 -vsync 0 %s/frame_%%06d.png" % (
+                        vid_file,
+                        frame_pth,
+                    )
+            os.system(cmd)
